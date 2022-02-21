@@ -1,0 +1,18 @@
+version: '3.2'
+
+services:
+  covax:
+    container_name: mediator-api
+    build:
+      context: .
+      network: host
+    image: mediator-api
+    restart: always
+    ports:
+      - '3333:3333'
+    env_file: .env
+    networks:
+      - mediator-api
+networks:
+  covax-api:
+    driver: 'bridge'
