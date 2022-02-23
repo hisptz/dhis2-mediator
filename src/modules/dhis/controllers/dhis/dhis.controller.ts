@@ -9,16 +9,29 @@ import {
   Query,
   Req,
   Res,
+  Delete,
 } from '@nestjs/common';
 import { find } from 'lodash';
 import { DhisService } from '../../services/dhis/dhis.service';
 
 @Controller('')
 export class DhisController {
-  cache = {};
-  allowedEndPoints = ['me.json', 'dataStore'];
+  cache: any = {};
+  allowedEndPoints: string[];
 
-  constructor(private dhisService: DhisService) {}
+  constructor(private dhisService: DhisService) {
+    this.allowedEndPoints = ['me.json', 'dataStore'];
+  }
+
+  @Delete('cache')
+  async clearCache() {
+    this.cache = {};
+    return {
+      code: 200,
+      message: 'Cache cleared',
+    };
+  }
+
   @Get(':endPoint')
   async getAPI(
     @Req() request,
