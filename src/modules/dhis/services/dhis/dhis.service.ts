@@ -8,8 +8,7 @@ import {
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { catchError } from 'rxjs/operators';
-import { firstValueFrom, throwError } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class DhisService {
@@ -104,10 +103,15 @@ export class DhisService {
   }
 
   generateErrorException(error: any) {
-    const { data } = error?.response;
-    const statusCode = data && data.httpStatusCode ? data.httpStatusCode : 500;
-    const message =
-      data && data.message ? data.message : 'Internal Server Error';
-    throw new HttpException(message, statusCode);
+    if (error && error.response) {
+      const { data } = error?.response;
+      const statusCode =
+        data && data?.httpStatusCode ? data.httpStatusCode : 500;
+      const message =
+        data && data.message ? data.message : 'Internal Server Error';
+      throw new HttpException(message, statusCode);
+    } else {
+      throw new HttpException('Internal Server Error', 500);
+    }
   }
 }
