@@ -11,16 +11,26 @@ import {
   Res,
   Delete,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { find } from 'lodash';
 import { DhisService } from '../../services/dhis/dhis.service';
 
 @Controller('')
 export class DhisController {
   cache: any = {};
-  allowedEndPoints: string[];
+  allowedResources: string[];
+  readonlyResources: string[];
 
-  constructor(private dhisService: DhisService) {
-    this.allowedEndPoints = ['me.json', 'dataStore'];
+  constructor(
+    private configService: ConfigService,
+    private dhisService: DhisService,
+  ) {
+    this.allowedResources = configService.get<string[]>(
+      'dhis.allowedResources',
+    );
+    this.readonlyResources = configService.get<string[]>(
+      'dhis.readonlyResources',
+    );
   }
 
   @Delete('cache')
@@ -41,7 +51,7 @@ export class DhisController {
     @Body() body?,
   ): Promise<any> {
     const allowedEndPoint = find(
-      this.allowedEndPoints,
+      [...this.readonlyResources, ...this.allowedResources],
       (endPoint) => param.endPoint.indexOf(endPoint) !== -1,
     );
     if (allowedEndPoint) {
@@ -68,7 +78,7 @@ export class DhisController {
   ): Promise<any> {
     const path = decodeURI(request.url).split('/api/').join('');
     const allowedEndPoint = find(
-      this.allowedEndPoints,
+      [...this.readonlyResources, ...this.allowedResources],
       (endPoint) => path.indexOf(endPoint) !== -1,
     );
     if (allowedEndPoint) {
@@ -100,7 +110,7 @@ export class DhisController {
     @Body() body?,
   ): Promise<any> {
     const allowedEndPoint = find(
-      this.allowedEndPoints,
+      this.allowedResources,
       (endPoint) => param.endPoint.indexOf(endPoint) !== -1,
     );
     if (allowedEndPoint) {
@@ -127,7 +137,7 @@ export class DhisController {
   ): Promise<any> {
     const path = decodeURI(request.url).split('/api/').join('');
     const allowedEndPoint = find(
-      this.allowedEndPoints,
+      this.allowedResources,
       (endPoint) => path.indexOf(endPoint) !== -1,
     );
     if (allowedEndPoint) {
@@ -153,7 +163,7 @@ export class DhisController {
     @Body() body?,
   ): Promise<any> {
     const allowedEndPoint = find(
-      this.allowedEndPoints,
+      this.allowedResources,
       (endPoint) => param.endPoint.indexOf(endPoint) !== -1,
     );
     if (allowedEndPoint) {
@@ -180,7 +190,7 @@ export class DhisController {
   ): Promise<any> {
     const path = decodeURI(request.url).split('/api/').join('');
     const allowedEndPoint = find(
-      this.allowedEndPoints,
+      this.allowedResources,
       (endPoint) => path.indexOf(endPoint) !== -1,
     );
     if (allowedEndPoint) {
