@@ -1,7 +1,7 @@
 version: '3.2'
 
 services:
-  covax:
+  mediator:
     container_name: mediator-api
     build:
       context: .
@@ -14,5 +14,6 @@ services:
     networks:
       - mediator-api
 networks:
-  covax-api:
+  mediator-api:
     driver: 'bridge'
+# 
