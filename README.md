@@ -169,7 +169,7 @@ To run the development server with docker, while at the root of the project use 
 npm run start:prod
 ```
 
-#### 4.3.1 Using Docker.
+#### 4.3.2 Using Docker.
 
 If using the `api.zip` file, the file should be first unzipped and navigate into the resulting folder. On the other hand if using the app source code, navigate to the dist folder.
 
