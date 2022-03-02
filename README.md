@@ -1,73 +1,190 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+<!-- [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/) -->
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# DHIS2 API MEDIATOR
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+1.  [Introduction](#Introduction)
 
-## Description
+2.  [Pre-requisites](#Pre-requisites)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+3.  [Getting started with API](#GetStartedWithAPI)
 
-## Installation
+    3.1. [Installations](#Installations)
 
-```bash
-$ npm install
+    3.2. [Configuration](#Configuration)
+
+4.  [Running the of API](#OperationsOfApi)
+
+    4.1. [Running the development server](#runDevelopment)
+
+    4.2. [Building the API](#Build)
+
+    4.3. [Running the production server](#Production)
+
+5.  [How to contribute](#contribute)
+
+## 1. <a name='Introduction'></a>Introduction
+
+This is [NestJS](https://docs.nestjs.com/) application that act as a mediator between a DHIS2 instance and a front end application for handling authentication and allow whitelisting of DHIS2 API resources. With the help of this mediator, one can expose part of DHIS2 API that could be used by a custom front end application while also ensuring authentication using configurations set.
+
+![Flow chart](mediator-flow-chart.png?raw=true 'Mediator flow chart')
+
+## 2. <a name='Pre-requisites'></a>Pre-requisites
+
+```
+- node +12
+
+- npm +6.13
+
+- docker-engine +20.10.11
+
+- docker-compose +1.29.1
+
+- nestjs +7.0.0
+
 ```
 
-## Running the app
+## 3. <a name='GetStartedWithAPI'></a>Getting started with API
 
-```bash
-# development
-$ npm run start
+### 3.1. <a name='Installations'></a>Installations
 
-# watch mode
-$ npm run start:dev
+To clone the app and install all app dependencies, run the below commands
 
-# production mode
-$ npm run start:prod
+```
+git clone https://github.com/hisptz/dhis2-mediator
+cd dhis2-mediator
+npm install
 ```
 
-## Test
+### 3.2. <a name='Configuration'></a>Configuration
 
-```bash
-# unit tests
-$ npm run test
+There are two types of configurations that need to be done to get the mediator API up and running. These configurations are:
 
-# e2e tests
-$ npm run test:e2e
+<ul>
+  <li>Environmental variables configurations</li>
+  <li>Docker compose configurations</li>
+</ul>
 
-# test coverage
-$ npm run test:cov
+#### 3.2.1 Environmental variables configurations
+
+The environmental variables configurations enables configuration of the DHIS2 instance url, username and password. It also allows setting of the port where the mediator API will be running and both the readonly and allowed resources. This can be done as the `.env.example` file.
+
+```
+# DHIS2
+DHIS2_BASE_URL="path_to_dhis"
+DHIS2_USERNAME="username"
+DHIS2_PASSWORD="password"
+PORT="3000"
+READONLY_RESOURCES=["resource1"]
+ALLOWED_RESOURCES=["resource2"]
 ```
 
-## Support
+<strong>NOTE</strong>
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+<ul>
+  <li>The <strong>READONLY_RESOURCES</strong> is the list of all the resources that are only allowed for read only. It should be noted that the resources should be in double quotes (")
+  
+  This could be specified as READONLY_RESOURCES = ["me", "dataElements/XXXXXXXXXX"]</li>
 
-## Stay in touch
+   <li>The <strong>ALLOWED_RESOURCES</strong> is the list of all the resources that are allowed for reading, updating and creating. These are specified in the same way using the double quotes.
+  
+  This could be specified as ALLOWED_RESOURCES = [ "trackedEntityInstances", "events"]</li>
+</ul>
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+#### 3.2.2 Docker compose configurations
 
-## License
+These configurations are use for starting the docker image from the build. The example of these configurations can be through the `docker-compose.example.yml`. Rename the file to or create a copy of this file with name `docker-compose.yml` and fill in the configurations as how the file contents suggests.
 
-Nest is [MIT licensed](LICENSE).
+```
+version: '3.2'
+
+services:
+  mediator:
+    container_name: mediator-api
+    build:
+      context: .
+      network: host
+    image: mediator-api
+    restart: always
+    ports:
+      - '3333:3333'
+    env_file: .env
+    networks:
+      - mediator-api
+networks:
+  mediator-api:
+    driver: 'bridge'
+
+```
+
+## 4. <a name='OperationsOfApi'></a>Running the of API
+
+Once all configuration has been done and packages installed, the mediator can now be started either in development or on production mode.
+
+### 4.1. <a name='runDevelopment'></a>Running the development server
+
+The development server can be started by running the command:
+
+```
+npm run start
+```
+
+or for a watch mode with
+
+```
+npm run start:dev
+```
+
+or just:
+
+```
+nest start
+```
+
+### 4.2. <a name='Build'></a>Building the API
+
+Building the mediator API, can be done by running the command:
+
+```
+npm run build
+```
+
+This command builds the API into the `dist` folder while at the same time moving the `.env.example` and `docker-compose.yml` files to your dist folder and also creating the `api.zip` file that has all the `dist` folder contents zipped.
+
+### 4.3. <a name='Production'></a>Running the production server
+
+There are two ways for running the production server, these are:
+
+<ul>
+  <li>Using Node</li>
+  <li>Using Docker configurations</li>
+</ul>
+
+It should be noted that both of this approaches needs to be done after the building the mediator API
+
+#### 4.3.1 Using Node.
+
+To run the development server with docker, while at the root of the project use the command:
+
+```
+npm run start:prod
+```
+
+#### 4.3.1 Using Docker.
+
+If using the `api.zip` file, the file should be first unzipped and navigate into the resulting folder. On the other hand if using the app source code, navigate to the dist folder.
+
+The next step applies to all the above scenarios, and that is creating of `.env` file similar to the above [configuration instructions](#Configuration).
+
+Lastly to start the production server run the command
+
+```
+docker-compose up -d --build
+```
+
+<strong>NOTE</strong>
+
+For more configurations of the ports and how docker-compose would be handling the mediator API, make changes on the `docker-compose.yml` file.
+
+## 5. <a name='contribute'></a>How to contribute
+
+In order to contribute to this project, fork the repository, make the necessary changes and submit the pull request for review.
