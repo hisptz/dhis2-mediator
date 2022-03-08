@@ -33,6 +33,14 @@ export class DhisController {
     );
   }
 
+  shouldBeCached(urlEndPoint: string): boolean {
+    const shouldBeCached = find(
+      [...this.readonlyResources],
+      (endPoint) => urlEndPoint.indexOf(endPoint) !== -1,
+    );
+    return shouldBeCached ? true : false;
+  }
+
   @Delete('cache')
   async clearCache() {
     this.cache = {};
@@ -82,7 +90,7 @@ export class DhisController {
       (endPoint) => path.indexOf(endPoint) !== -1,
     );
     if (allowedEndPoint) {
-      if (this.cache[path]) {
+      if (this.shouldBeCached(path) && this.cache[path]) {
         response.status(200);
         response.send(this.cache[path]);
       } else {
