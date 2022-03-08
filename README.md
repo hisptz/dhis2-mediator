@@ -20,7 +20,9 @@
 
     4.3. [Running the production server](#Production)
 
-5.  [How to contribute](#contribute)
+5.  [How to connect with another application](#connect)
+
+6.  [How to contribute](#contribute)
 
 ## 1. <a name='Introduction'></a>Introduction
 
@@ -81,7 +83,7 @@ ALLOWED_RESOURCES=["resource2"]
 <strong>NOTE</strong>
 
 <ul>
-  <li>The <strong>READONLY_RESOURCES</strong> is the list of all the resources that are only allowed for read only. It should be noted that the resources should be in double quotes (")
+  <li>The <strong>READONLY_RESOURCES</strong> is the list of all the resources that are only allowed for read only. It should be noted that the resources should be in double quotes ("). Additionally, for performance reasons these resources are cached, hence the mediator will not be fetching these items every now and then.
   
   This could be specified as READONLY_RESOURCES = ["me", "dataElements/XXXXXXXXXX"]</li>
 
@@ -185,6 +187,55 @@ docker-compose up -d --build
 
 For more configurations of the ports and how docker-compose would be handling the mediator API, make changes on the `docker-compose.yml` file.
 
-## 5. <a name='contribute'></a>How to contribute
+## 5. <a name='connect'></a>How to connect with another application
+
+Once the mediator is running either on development or production(recommended) mode, other applications can access the DHIS2 API through this mediator by making HTTP requests to the API resources (allowed and readonly) as specified on the `.env` file through the specified port.
+
+```
+# DHIS2
+DHIS2_BASE_URL="https://play.dhis2.org/2.37.3"
+DHIS2_USERNAME="admin"
+DHIS2_PASSWORD="district"
+PORT="3000"
+READONLY_RESOURCES=["me"]
+ALLOWED_RESOURCES=["dataStore"]
+```
+
+Considering the above example of `.env` configurations, the API endpoints can be accessed as following:
+
+### 5.1 Accessing readonly resources
+
+These API resources can only be accessed by a GET HTTP method. As per the above example we can access the `me` resource using
+
+```
+# GET
+curl -v localhost:3000/me
+```
+
+<strong>NOTE</strong>: These resources are cached, hence only the first request is sent to the DHIS2 instance. To clear the cache, a DELETE HTTP request should be sent to the endpoint `cache` as:
+
+```
+# Clear cache
+curl -X DELETE http://localhost:3000/cache
+
+```
+
+### 5.2 Accessing allowed resources
+
+These API resources can only be accessed by GET, POST and PUT HTTP methods. As per the above example we can access the `dataStore` resource using the following requests. These resources are not cached, hence no clearing of cache required for these resources.
+
+```
+# GET
+curl -v localhost:3000/dataStore
+
+# POST
+curl -d '[1, 2, 3]' localhost:3000/dataStore/demo/demo-item-1
+
+# PUT
+curl -d '{"name": "userName", "value": "Megamind"}' -X PUT localhost:3000/dataStore/demo/demo-item-1
+
+```
+
+## 6. <a name='contribute'></a>How to contribute
 
 In order to contribute to this project, fork the repository, make the necessary changes and submit the pull request for review.
