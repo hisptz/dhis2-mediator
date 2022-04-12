@@ -209,14 +209,14 @@ These API resources can only be accessed by a GET HTTP method. As per the above 
 
 ```
 # GET
-curl -v localhost:3000/me
+curl -v localhost:3000/api/me
 ```
 
 <strong>NOTE</strong>: These resources are cached, hence only the first request is sent to the DHIS2 instance. To clear the cache, a DELETE HTTP request should be sent to the endpoint `cache` as:
 
 ```
 # Clear cache
-curl -X DELETE http://localhost:3000/cache
+curl -X DELETE http://localhost:3000/api/cache
 
 ```
 
@@ -226,13 +226,13 @@ These API resources can only be accessed by GET, POST and PUT HTTP methods. As p
 
 ```
 # GET
-curl -v localhost:3000/dataStore
+curl -v localhost:3000/api/dataStore
 
 # POST
-curl -d '[1, 2, 3]' localhost:3000/dataStore/demo/demo-item-1
+curl -d '[1, 2, 3]' localhost:3000/api/dataStore/demo/demo-item-1
 
 # PUT
-curl -d '{"name": "userName", "value": "Megamind"}' -X PUT localhost:3000/dataStore/demo/demo-item-1
+curl -d '{"name": "userName", "value": "Megamind"}' -X PUT localhost:3000/api/dataStore/demo/demo-item-1
 
 ```
 
