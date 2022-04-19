@@ -2,6 +2,7 @@ import {
   Body,
   HttpException,
   Injectable,
+  Logger,
   Param,
   Query,
   Req,
@@ -103,6 +104,7 @@ export class DhisService {
   }
 
   generateErrorException(error: any) {
+    Logger.error(JSON.stringify(error));
     if (error && error.response) {
       const { data } = error?.response;
       const statusCode =
