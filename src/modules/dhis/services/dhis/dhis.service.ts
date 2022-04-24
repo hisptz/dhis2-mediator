@@ -109,9 +109,7 @@ export class DhisService {
       const { data } = error?.response;
       const statusCode =
         data && data?.httpStatusCode ? data.httpStatusCode : 500;
-      const message =
-        data && data.message ? data.message : 'Internal Server Error';
-      throw new HttpException(message, statusCode);
+      throw new HttpException(data, statusCode);
     } else {
       throw new HttpException('Internal Server Error', 500);
     }

@@ -13,19 +13,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    const method = request.method;
-    const status = exception.getStatus();
-    const message = exception.message;
-
-    Logger.error('URL ERROR:', request.url);
-    Logger.error(exception.stack);
-
+    const status = exception.getStatus() || 500;
+    Logger.error(`${request.url}:: ${JSON.stringify(exception.stack)}`);
     response.status(status).json({
-      httpStatusCode: status,
-      message,
-      path: request.url,
-      method,
-      timestamp: new Date().toISOString(),
+      ...exception,
     });
   }
 }
