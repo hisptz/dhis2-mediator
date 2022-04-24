@@ -5,11 +5,11 @@ services:
     container_name: mediator-api
     build:
       context: .
-      network: host
+    network: host
     image: mediator-api
     restart: always
     ports:
-      - '3333:3333'
+      - '3000:3000'
     env_file: .env
     networks:
       - mediator-api
