@@ -34,7 +34,6 @@ RUN npm -v
 RUN mkdir /home/app
 WORKDIR /home/app
 COPY . .
-RUN npm install --only=production
 ENV NODE_ENV production
 ENV PORT 3000
 EXPOSE 3000
