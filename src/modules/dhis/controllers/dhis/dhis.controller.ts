@@ -10,6 +10,7 @@ import {
   Req,
   Res,
   Delete,
+  Headers,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { find } from 'lodash';
@@ -56,6 +57,7 @@ export class DhisController {
     @Param() param,
     @Query() query,
     @Res() response,
+    @Headers() headers,
     @Body() body?,
   ): Promise<any> {
     const allowedEndPoint = find(
@@ -67,6 +69,7 @@ export class DhisController {
         request,
         param,
         query,
+        headers,
         body,
       );
       response.status(200);
@@ -82,6 +85,7 @@ export class DhisController {
     @Param() param,
     @Query() query,
     @Res() response,
+    @Headers() headers,
     @Body() body?,
   ): Promise<any> {
     const path = decodeURI(request.url).split('/api/').join('');
@@ -98,6 +102,7 @@ export class DhisController {
           request,
           param,
           query,
+          headers,
           body,
         );
         response.status(200);
@@ -115,6 +120,7 @@ export class DhisController {
     @Param() param,
     @Query() query,
     @Res() response,
+    @Headers() headers,
     @Body() body?,
   ): Promise<any> {
     const allowedEndPoint = find(
@@ -126,6 +132,7 @@ export class DhisController {
         request,
         param,
         query,
+        headers,
         body,
       );
       response.status(200);
@@ -141,6 +148,7 @@ export class DhisController {
     @Param() param,
     @Query() query,
     @Res() response,
+    @Headers() headers,
     @Body() body?,
   ): Promise<any> {
     const path = decodeURI(request.url).split('/api/').join('');
@@ -153,6 +161,7 @@ export class DhisController {
         request,
         param,
         query,
+        headers,
         body,
       );
       response.status(200);
@@ -168,6 +177,8 @@ export class DhisController {
     @Param() param,
     @Query() query,
     @Res() response,
+
+    @Headers() headers,
     @Body() body?,
   ): Promise<any> {
     const allowedEndPoint = find(
@@ -179,6 +190,7 @@ export class DhisController {
         request,
         param,
         query,
+        headers,
         body,
       );
       response.status(200);
@@ -194,6 +206,7 @@ export class DhisController {
     @Param() param,
     @Query() query,
     @Res() response,
+    @Headers() headers,
     @Body() body?,
   ): Promise<any> {
     const path = decodeURI(request.url).split('/api/').join('');
@@ -206,6 +219,7 @@ export class DhisController {
         request,
         param,
         query,
+        headers,
         body,
       );
       response.status(200);
