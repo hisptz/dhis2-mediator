@@ -1,20 +1,23 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
-  Post,
-  Put,
+  Headers,
   HttpException,
   Param,
+  Post,
+  Put,
   Query,
   Req,
   Res,
-  Delete,
-  Headers,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { find } from 'lodash';
 import { DhisService } from '../../services/dhis/dhis.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('')
 export class DhisController {
@@ -115,12 +118,14 @@ export class DhisController {
   }
 
   @Post(':endPoint')
+  @UseInterceptors(FileInterceptor('file'))
   async postAPI(
     @Req() request,
     @Param() param,
     @Query() query,
     @Res() response,
     @Headers() headers,
+    @UploadedFile() file: Express.Multer.File,
     @Body() body?,
   ): Promise<any> {
     const allowedEndPoint = find(
@@ -134,6 +139,7 @@ export class DhisController {
         query,
         headers,
         body,
+        file,
       );
       response.status(200);
       response.send(results);
@@ -143,12 +149,14 @@ export class DhisController {
   }
 
   @Post(':endPoint/*')
+  @UseInterceptors(FileInterceptor('file'))
   async postExtendedPointAPI(
     @Req() request,
     @Param() param,
     @Query() query,
     @Res() response,
     @Headers() headers,
+    @UploadedFile() file: Express.Multer.File,
     @Body() body?,
   ): Promise<any> {
     const path = decodeURI(request.url).split('/api/').join('');
@@ -163,6 +171,7 @@ export class DhisController {
         query,
         headers,
         body,
+        file,
       );
       response.status(200);
       response.send(results);
@@ -172,13 +181,14 @@ export class DhisController {
   }
 
   @Put(':endPoint')
+  @UseInterceptors(FileInterceptor('file'))
   async putAPI(
     @Req() request,
     @Param() param,
     @Query() query,
     @Res() response,
-
     @Headers() headers,
+    @UploadedFile() file?: Express.Multer.File,
     @Body() body?,
   ): Promise<any> {
     const allowedEndPoint = find(
@@ -192,6 +202,7 @@ export class DhisController {
         query,
         headers,
         body,
+        file,
       );
       response.status(200);
       response.send(results);
@@ -201,12 +212,14 @@ export class DhisController {
   }
 
   @Put(':endPoint/*')
+  @UseInterceptors(FileInterceptor('file'))
   async putExtendedPointAPI(
     @Req() request,
     @Param() param,
     @Query() query,
     @Res() response,
     @Headers() headers,
+    @UploadedFile() file: Express.Multer.File,
     @Body() body?,
   ): Promise<any> {
     const path = decodeURI(request.url).split('/api/').join('');
@@ -221,6 +234,7 @@ export class DhisController {
         query,
         headers,
         body,
+        file,
       );
       response.status(200);
       response.send(results);
