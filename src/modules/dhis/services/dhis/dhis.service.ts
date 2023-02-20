@@ -5,11 +5,13 @@ import {
   Logger,
   Param,
   Query,
+  Headers,
   Req,
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import { omit } from 'lodash';
 
 @Injectable()
 export class DhisService {
@@ -17,6 +19,13 @@ export class DhisService {
     private configService: ConfigService,
     private http: HttpService,
   ) {}
+
+  private _sanitizeHttpHeaders(headers: any): any {
+    headers = omit(headers, ['host', 'connection']);
+    headers['connection'] = 'keep-alive';
+
+    return headers;
+  }
 
   getOtherParam(param) {
     return (
@@ -32,8 +41,10 @@ export class DhisService {
     @Req() request,
     @Param() param,
     @Query() query,
+    @Headers() headers,
     @Body() body,
   ): Promise<any> {
+    headers = this._sanitizeHttpHeaders(headers);
     const apiEndPoint = this.configService.get<string>('dhis.api');
     const username = this.configService.get<string>('dhis.username');
     const password = this.configService.get<string>('dhis.password');
@@ -58,6 +69,7 @@ export class DhisService {
         if (['GET', 'get'].indexOf(request.method) > -1) {
           response = await firstValueFrom(
             this.http.get(url, {
+              headers: headers ?? {},
               auth: {
                 username: username,
                 password: password,
@@ -69,6 +81,7 @@ export class DhisService {
         } else if (['POST', 'post'].indexOf(request.method) > -1) {
           response = await firstValueFrom(
             this.http.post(url, body, {
+              headers: headers ?? {},
               auth: {
                 username: username,
                 password: password,
@@ -82,6 +95,7 @@ export class DhisService {
             this.http.put(url, body, {
               headers: {
                 'Content-Type': 'application/json;charset=UTF-8',
+                ...(headers ?? {}),
               },
               auth: {
                 username: username,
