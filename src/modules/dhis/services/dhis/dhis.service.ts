@@ -1,17 +1,17 @@
 import {
   Body,
+  Headers,
   HttpException,
   Injectable,
   Logger,
   Param,
   Query,
-  Headers,
   Req,
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
-import { omit } from 'lodash';
+import FormData = require('form-data');
 
 @Injectable()
 export class DhisService {
@@ -20,11 +20,8 @@ export class DhisService {
     private http: HttpService,
   ) {}
 
-  private _sanitizeHttpHeaders(headers: any): any {
-    headers = omit(headers, ['host', 'connection']);
-    headers['connection'] = 'keep-alive';
-
-    return headers;
+  private _sanitizeHttpHeaders(headers: any, file: any): any {
+    return {};
   }
 
   getOtherParam(param) {
@@ -43,8 +40,16 @@ export class DhisService {
     @Query() query,
     @Headers() headers,
     @Body() body,
+    file?: Express.Multer.File,
   ): Promise<any> {
-    headers = this._sanitizeHttpHeaders(headers);
+    headers = this._sanitizeHttpHeaders(headers, file);
+
+    const fileData = new FormData();
+
+    if (file) {
+      fileData.append('file', file.buffer, { filename: file.originalname });
+    }
+
     const apiEndPoint = this.configService.get<string>('dhis.api');
     const username = this.configService.get<string>('dhis.username');
     const password = this.configService.get<string>('dhis.password');
@@ -80,8 +85,29 @@ export class DhisService {
           });
         } else if (['POST', 'post'].indexOf(request.method) > -1) {
           response = await firstValueFrom(
-            this.http.post(url, body, {
-              headers: headers ?? {},
+            this.http.post(url, file ? fileData : body, {
+              headers: {
+                ...(headers ?? {}),
+                ...(file ? fileData.getHeaders() ?? {} : {}),
+              },
+              auth: {
+                username: username,
+                password: password,
+              },
+            }),
+          ).catch((error: any) => {
+            console.log({
+              error,
+            });
+            this.generateErrorException(error);
+          });
+        } else if (['PUT', 'put'].indexOf(request.method) > -1) {
+          response = await firstValueFrom(
+            this.http.put(url, body, {
+              headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+                ...(headers ?? {}),
+              },
               auth: {
                 username: username,
                 password: password,
@@ -90,9 +116,9 @@ export class DhisService {
           ).catch((error: any) => {
             this.generateErrorException(error);
           });
-        } else if (['PUT', 'put'].indexOf(request.method) > -1) {
+        } else if (['PATCH', 'patch'].indexOf(request.method) > -1) {
           response = await firstValueFrom(
-            this.http.put(url, body, {
+            this.http.patch(url, body, {
               headers: {
                 'Content-Type': 'application/json;charset=UTF-8',
                 ...(headers ?? {}),

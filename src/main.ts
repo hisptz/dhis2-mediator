@@ -8,7 +8,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'log', 'warn'],
   });
-  app.enableCors();
+  app.enableCors({
+    origin: function (requestOrigin, callback) {
+      callback(null, true);
+    },
+    credentials: true,
+  });
   app.useGlobalFilters(new HttpExceptionFilter());
   app.setGlobalPrefix(globalPrefix);
   const port = process.env.PORT || 3000;
@@ -16,4 +21,5 @@ async function bootstrap() {
     Logger.log(`Mediator now available at localhost:${port}/${globalPrefix}`);
   });
 }
+
 bootstrap();
