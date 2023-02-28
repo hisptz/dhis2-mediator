@@ -6,6 +6,7 @@ import {
   Headers,
   HttpException,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -214,6 +215,69 @@ export class DhisController {
   @Put(':endPoint/*')
   @UseInterceptors(FileInterceptor('file'))
   async putExtendedPointAPI(
+    @Req() request,
+    @Param() param,
+    @Query() query,
+    @Res() response,
+    @Headers() headers,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body?,
+  ): Promise<any> {
+    const path = decodeURI(request.url).split('/api/').join('');
+    const allowedEndPoint = find(
+      this.allowedResources,
+      (endPoint) => path.indexOf(endPoint) !== -1,
+    );
+    if (allowedEndPoint) {
+      const results = await this.dhisService.getAPI(
+        request,
+        param,
+        query,
+        headers,
+        body,
+        file,
+      );
+      response.status(200);
+      response.send(results);
+    } else {
+      throw new HttpException('Not Found', 404);
+    }
+  }
+
+  @Patch(':endPoint')
+  @UseInterceptors(FileInterceptor('file'))
+  async patchAPI(
+    @Req() request,
+    @Param() param,
+    @Query() query,
+    @Res() response,
+    @Headers() headers,
+    @UploadedFile() file?: Express.Multer.File,
+    @Body() body?,
+  ): Promise<any> {
+    const allowedEndPoint = find(
+      this.allowedResources,
+      (endPoint) => param.endPoint.indexOf(endPoint) !== -1,
+    );
+    if (allowedEndPoint) {
+      const results = await this.dhisService.getAPI(
+        request,
+        param,
+        query,
+        headers,
+        body,
+        file,
+      );
+      response.status(200);
+      response.send(results);
+    } else {
+      throw new HttpException('Not Found', 404);
+    }
+  }
+
+  @Patch(':endPoint/*')
+  @UseInterceptors(FileInterceptor('file'))
+  async patchExtendedPointAPI(
     @Req() request,
     @Param() param,
     @Query() query,

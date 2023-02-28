@@ -11,7 +11,6 @@ import {
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
-import { omit } from 'lodash';
 import FormData = require('form-data');
 
 @Injectable()
@@ -22,13 +21,7 @@ export class DhisService {
   ) {}
 
   private _sanitizeHttpHeaders(headers: any, file: any): any {
-    headers = omit(headers, ['host', 'connection']);
-    // headers['connection'] = 'keep-alive';
-    if (file) {
-      headers['content-type'] = 'multipart/form-data';
-    }
-
-    return headers;
+    return {};
   }
 
   getOtherParam(param) {
@@ -50,6 +43,7 @@ export class DhisService {
     file?: Express.Multer.File,
   ): Promise<any> {
     headers = this._sanitizeHttpHeaders(headers, file);
+
     const fileData = new FormData();
 
     if (file) {
@@ -94,7 +88,7 @@ export class DhisService {
             this.http.post(url, file ? fileData : body, {
               headers: {
                 ...(headers ?? {}),
-                ...(fileData.getHeaders() ?? {}),
+                ...(file ? fileData.getHeaders() ?? {} : {}),
               },
               auth: {
                 username: username,
@@ -110,6 +104,21 @@ export class DhisService {
         } else if (['PUT', 'put'].indexOf(request.method) > -1) {
           response = await firstValueFrom(
             this.http.put(url, body, {
+              headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+                ...(headers ?? {}),
+              },
+              auth: {
+                username: username,
+                password: password,
+              },
+            }),
+          ).catch((error: any) => {
+            this.generateErrorException(error);
+          });
+        } else if (['PATCH', 'patch'].indexOf(request.method) > -1) {
+          response = await firstValueFrom(
+            this.http.patch(url, body, {
               headers: {
                 'Content-Type': 'application/json;charset=UTF-8',
                 ...(headers ?? {}),
