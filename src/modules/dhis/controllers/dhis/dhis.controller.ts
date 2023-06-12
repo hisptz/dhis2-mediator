@@ -18,7 +18,6 @@ import { DhisService } from '../../services/dhis/dhis.service';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 @Controller('')
 export class DhisController {
-  cache: any = {};
   allowedResources: string[];
   readonlyResources: string[];
 
@@ -100,9 +99,10 @@ export class DhisController {
       (endPoint) => path.indexOf(endPoint) !== -1,
     );
     if (allowedEndPoint) {
-      if (this.shouldBeCached(path) && this.cache[path]) {
+      const cachedData = await this._getCachedData(path);
+      if (this.shouldBeCached(path) && cachedData) {
         response.status(200);
-        response.send(this.cache[path]);
+        response.send(cachedData);
       } else {
         const results = await this.dhisService.getAPI(
           request,
@@ -112,7 +112,7 @@ export class DhisController {
         );
         response.status(200);
         response.send(results);
-        this.cache[path] = results;
+        this._setCachedData(path, results);
       }
     } else {
       throw new HttpException('Not Found', 404);
