@@ -10,11 +10,12 @@ import {
   Req,
   Res,
   Delete,
+  Inject,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { find } from 'lodash';
 import { DhisService } from '../../services/dhis/dhis.service';
-
+import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 @Controller('')
 export class DhisController {
   cache: any = {};
@@ -22,6 +23,7 @@ export class DhisController {
   readonlyResources: string[];
 
   constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private configService: ConfigService,
     private dhisService: DhisService,
   ) {
@@ -31,6 +33,14 @@ export class DhisController {
     this.readonlyResources = configService.get<string[]>(
       'dhis.readonlyResources',
     );
+  }
+
+  private async _getCachedData(key: string): Promise<any> {
+    return await this.cacheManager.get(key);
+  }
+
+  private async _setCachedData(key: string, value: any): Promise<any> {
+    return await this.cacheManager.set(key, value);
   }
 
   shouldBeCached(urlEndPoint: string): boolean {
@@ -43,7 +53,7 @@ export class DhisController {
 
   @Delete('cache')
   async clearCache() {
-    this.cache = {};
+    await this.cacheManager.reset();
     return {
       code: 200,
       message: 'Cache cleared',
