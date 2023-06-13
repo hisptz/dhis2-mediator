@@ -197,6 +197,7 @@ DHIS2_BASE_URL="https://play.dhis2.org/2.37.3"
 DHIS2_USERNAME="admin"
 DHIS2_PASSWORD="district"
 PORT="3000"
+CACHE_TTL="3600"
 READONLY_RESOURCES=["me"]
 ALLOWED_RESOURCES=["dataStore"]
 ```

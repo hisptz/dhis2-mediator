@@ -14,19 +14,23 @@ import {
   Res,
   UploadedFile,
   UseInterceptors,
+  Inject,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { find } from 'lodash';
 import { DhisService } from '../../services/dhis/dhis.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('')
 export class DhisController {
-  cache: any = {};
   allowedResources: string[];
   readonlyResources: string[];
+  cacheTtl: number;
 
   constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private configService: ConfigService,
     private dhisService: DhisService,
   ) {
@@ -36,6 +40,15 @@ export class DhisController {
     this.readonlyResources = configService.get<string[]>(
       'dhis.readonlyResources',
     );
+    this.cacheTtl = configService.get<number>('dhis.cacheTtl');
+  }
+
+  private async _getCachedData(key: string): Promise<any> {
+    return await this.cacheManager.get(key);
+  }
+
+  private async _setCachedData(key: string, value: any): Promise<any> {
+    return await this.cacheManager.set(key, value, this.cacheTtl ?? 60000);
   }
 
   shouldBeCached(urlEndPoint: string): boolean {
@@ -43,14 +56,15 @@ export class DhisController {
       [...this.readonlyResources],
       (endPoint) => urlEndPoint.indexOf(endPoint) !== -1,
     );
+
     return shouldBeCached ? true : false;
   }
 
   @Delete('cache')
   async clearCache() {
-    this.cache = {};
+    await this.cacheManager.reset();
     return {
-      code: 200,
+      code: 202,
       message: 'Cache cleared',
     };
   }
@@ -64,20 +78,28 @@ export class DhisController {
     @Headers() headers,
     @Body() body?,
   ): Promise<any> {
+    const path = decodeURI(request.url).split('/api/').join('');
     const allowedEndPoint = find(
       [...this.readonlyResources, ...this.allowedResources],
       (endPoint) => param.endPoint.indexOf(endPoint) !== -1,
     );
     if (allowedEndPoint) {
-      const results = await this.dhisService.getAPI(
-        request,
-        param,
-        query,
-        headers,
-        body,
-      );
-      response.status(200);
-      response.send(results);
+      const cachedData = await this._getCachedData(path);
+      if (this.shouldBeCached(path) && cachedData) {
+        response.status(200);
+        response.send(cachedData);
+      } else {
+        const results = await this.dhisService.getAPI(
+          request,
+          param,
+          query,
+          headers,
+          body,
+        );
+        await this._setCachedData(path, results);
+        response.status(200);
+        response.send(results);
+      }
     } else {
       throw new HttpException('Not Found', 404);
     }
@@ -98,9 +120,10 @@ export class DhisController {
       (endPoint) => path.indexOf(endPoint) !== -1,
     );
     if (allowedEndPoint) {
-      if (this.shouldBeCached(path) && this.cache[path]) {
+      const cachedData = await this._getCachedData(path);
+      if (this.shouldBeCached(path) && cachedData) {
         response.status(200);
-        response.send(this.cache[path]);
+        response.send(cachedData);
       } else {
         const results = await this.dhisService.getAPI(
           request,
@@ -109,9 +132,9 @@ export class DhisController {
           headers,
           body,
         );
+        await this._setCachedData(path, results);
         response.status(200);
         response.send(results);
-        this.cache[path] = results;
       }
     } else {
       throw new HttpException('Not Found', 404);
