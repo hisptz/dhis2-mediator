@@ -21,6 +21,7 @@ import { Cache } from 'cache-manager';
 export class DhisController {
   allowedResources: string[];
   readonlyResources: string[];
+  cacheTtl: number;
 
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
@@ -33,6 +34,7 @@ export class DhisController {
     this.readonlyResources = configService.get<string[]>(
       'dhis.readonlyResources',
     );
+    this.cacheTtl = configService.get<number>('dhis.cacheTtl');
   }
 
   private async _getCachedData(key: string): Promise<any> {
@@ -40,7 +42,7 @@ export class DhisController {
   }
 
   private async _setCachedData(key: string, value: any): Promise<any> {
-    return await this.cacheManager.set(key, value, 40000);
+    return await this.cacheManager.set(key, value, this.cacheTtl ?? 60000);
   }
 
   shouldBeCached(urlEndPoint: string): boolean {
@@ -48,6 +50,7 @@ export class DhisController {
       [...this.readonlyResources],
       (endPoint) => urlEndPoint.indexOf(endPoint) !== -1,
     );
+
     return shouldBeCached ? true : false;
   }
 
@@ -75,7 +78,6 @@ export class DhisController {
     );
     if (allowedEndPoint) {
       const cachedData = await this._getCachedData(path);
-
       if (this.shouldBeCached(path) && cachedData) {
         response.status(200);
         response.send(cachedData);
