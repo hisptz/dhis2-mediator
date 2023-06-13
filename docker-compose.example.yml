@@ -5,7 +5,6 @@ services:
     container_name: mediator-api
     build:
       context: .
-    network: host
     image: mediator-api
     restart: always
     ports:

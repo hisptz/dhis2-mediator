@@ -1,0 +1,22 @@
+{
+  "name": "dhis2-mediator",
+  "version": "1.0.4",
+  "description": "",
+  "author": "",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "node main"
+  },
+  "dependencies": {
+    "@nestjs/axios": "0.0.6",
+    "@nestjs/common": "^8.0.0",
+    "@nestjs/config": "^1.2.0",
+    "@nestjs/core": "^8.0.0",
+    "@nestjs/platform-express": "^8.0.0",
+    "lodash": "^4.17.21",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.2",
+    "rxjs": "^7.2.0"
+  }
+}
