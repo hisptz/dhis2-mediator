@@ -7,6 +7,7 @@ import { DhisModule } from './modules/dhis/dhis.module';
 
 @Module({
   imports: [
+    // CacheModule.register({ isGlobal: true }),
     ConfigModule.forRoot({
       load: [dhisConfigurations],
     }),

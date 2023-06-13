@@ -15,7 +15,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { find } from 'lodash';
 import { DhisService } from '../../services/dhis/dhis.service';
-import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 @Controller('')
 export class DhisController {
   allowedResources: string[];
@@ -39,7 +40,7 @@ export class DhisController {
   }
 
   private async _setCachedData(key: string, value: any): Promise<any> {
-    return await this.cacheManager.set(key, value);
+    return await this.cacheManager.set(key, value, 40000);
   }
 
   shouldBeCached(urlEndPoint: string): boolean {
@@ -54,7 +55,7 @@ export class DhisController {
   async clearCache() {
     await this.cacheManager.reset();
     return {
-      code: 200,
+      code: 202,
       message: 'Cache cleared',
     };
   }
@@ -67,19 +68,28 @@ export class DhisController {
     @Res() response,
     @Body() body?,
   ): Promise<any> {
+    const path = decodeURI(request.url).split('/api/').join('');
     const allowedEndPoint = find(
       [...this.readonlyResources, ...this.allowedResources],
       (endPoint) => param.endPoint.indexOf(endPoint) !== -1,
     );
     if (allowedEndPoint) {
-      const results = await this.dhisService.getAPI(
-        request,
-        param,
-        query,
-        body,
-      );
-      response.status(200);
-      response.send(results);
+      const cachedData = await this._getCachedData(path);
+
+      if (this.shouldBeCached(path) && cachedData) {
+        response.status(200);
+        response.send(cachedData);
+      } else {
+        const results = await this.dhisService.getAPI(
+          request,
+          param,
+          query,
+          body,
+        );
+        await this._setCachedData(path, results);
+        response.status(200);
+        response.send(results);
+      }
     } else {
       throw new HttpException('Not Found', 404);
     }
@@ -110,9 +120,9 @@ export class DhisController {
           query,
           body,
         );
+        await this._setCachedData(path, results);
         response.status(200);
         response.send(results);
-        this._setCachedData(path, results);
       }
     } else {
       throw new HttpException('Not Found', 404);
