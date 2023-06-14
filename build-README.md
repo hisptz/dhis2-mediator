@@ -22,8 +22,6 @@
 
 This is [NestJS](https://docs.nestjs.com/) application that act as a mediator between a DHIS2 instance and a front end application for handling authentication and allow whitelisting of DHIS2 API resources. With the help of this mediator, one can expose part of DHIS2 API that could be used by a custom front end application while also ensuring authentication using configurations set.
 
-![Flow chart](mediator-flow-chart.png?raw=true 'Mediator flow chart')
-
 ## 2. <a name='Pre-requisites'></a>Pre-requisites
 
 ```
