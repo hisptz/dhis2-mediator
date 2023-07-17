@@ -75,7 +75,10 @@ The environmental variables configurations enables configuration of the DHIS2 in
 DHIS2_BASE_URL="path_to_dhis"
 DHIS2_USERNAME="username"
 DHIS2_PASSWORD="password"
+DHIS2_API_TOKEN="api_token"
 PORT="3000"
+CACHE_TTL="<number-of-milliseconds-for-caching-readonly-resources>"
+NUMBER_OF_REQUESTS_PER_MINUTE="<number-of-client-requests-per-minute>"
 READONLY_RESOURCES=["resource1"]
 ALLOWED_RESOURCES=["resource2"]
 ```
@@ -90,6 +93,14 @@ ALLOWED_RESOURCES=["resource2"]
    <li>The <strong>ALLOWED_RESOURCES</strong> is the list of all the resources that are allowed for reading, updating and creating. These are specified in the same way using the double quotes.
   
   This could be specified as ALLOWED_RESOURCES = [ "trackedEntityInstances", "events"]</li>
+
+  <li>The <strong>CACHE_TTL</strong> is the number of milliseconds cached data can be stored. The caching mechanism is applied the resources specified as READONLY_RESOURCES only, since they are the ones subjected to less changes. It should be noted that the cache can be cleared using DELETE HTTP request to ${host}/api/cache.
+  
+  This could be specified as CACHE_TTL = 3600</li>
+
+   <li>The <strong>NUMBER_OF_REQUESTS_PER_MINUTE</strong> is the number that specifies the request a client can make to a resource per minute. This is to be used as a strategy against DDOS attacks. If not specified, the mediator considers 100 requests per minute.
+  
+  This could be specified as NUMBER_OF_REQUESTS_PER_MINUTE = 100</li>
 </ul>
 
 #### 3.2.2 Docker compose configurations
@@ -193,13 +204,15 @@ Once the mediator is running either on development or production(recommended) mo
 
 ```
 # DHIS2
-DHIS2_BASE_URL="https://play.dhis2.org/2.37.3"
+DHIS2_BASE_URL="https://play.dhis2.org/40.0.1"
 DHIS2_USERNAME="admin"
 DHIS2_PASSWORD="district"
+DHIS2_API_TOKEN="d2pat_GqYQTgdx2rzgIGvJhjCuHe70Evh9d7nO2925016161"
 PORT="3000"
-CACHE_TTL="3600"
-READONLY_RESOURCES=["me"]
-ALLOWED_RESOURCES=["dataStore"]
+CACHE_TTL="360000"
+NUMBER_OF_REQUESTS_PER_MINUTE=30
+READONLY_RESOURCES=["me", "dataStore"]
+ALLOWED_RESOURCES=["fileResources", "dataStore"]
 ```
 
 Considering the above example of `.env` configurations, the API endpoints can be accessed as following:
@@ -208,15 +221,18 @@ Considering the above example of `.env` configurations, the API endpoints can be
 
 These API resources can only be accessed by a GET HTTP method. As per the above example we can access the `me` resource using
 
-```
 # GET
+
 curl -v localhost:3000/api/me
+
 ```
 
 <strong>NOTE</strong>: These resources are cached, hence only the first request is sent to the DHIS2 instance. To clear the cache, a DELETE HTTP request should be sent to the endpoint `cache` as:
 
 ```
+
 # Clear cache
+
 curl -X DELETE http://localhost:3000/api/cache
 
 ```
@@ -226,13 +242,17 @@ curl -X DELETE http://localhost:3000/api/cache
 These API resources can only be accessed by GET, POST and PUT HTTP methods. As per the above example we can access the `dataStore` resource using the following requests. These resources are not cached, hence no clearing of cache required for these resources.
 
 ```
+
 # GET
+
 curl -v localhost:3000/api/dataStore
 
 # POST
+
 curl -d '[1, 2, 3]' localhost:3000/api/dataStore/demo/demo-item-1
 
 # PUT
+
 curl -d '{"name": "userName", "value": "Megamind"}' -X PUT localhost:3000/api/dataStore/demo/demo-item-1
 
 ```
@@ -240,3 +260,4 @@ curl -d '{"name": "userName", "value": "Megamind"}' -X PUT localhost:3000/api/da
 ## 6. <a name='contribute'></a>How to contribute
 
 In order to contribute to this project, fork the repository, make the necessary changes and submit the pull request for review.
+```
