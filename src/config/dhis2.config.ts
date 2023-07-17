@@ -5,6 +5,7 @@ export default registerAs('dhis', () => ({
   username: process.env.DHIS2_USERNAME,
   password: process.env.DHIS2_PASSWORD,
   cacheTtl: process.env.CACHE_TTL,
+  numberOfRequestsPerMinute: process.env.NUMBER_OF_REQUESTS_PER_MINUTE,
   readonlyResources: JSON.parse(process.env.READONLY_RESOURCES),
   allowedResources: JSON.parse(process.env.ALLOWED_RESOURCES),
 }));
