@@ -24,6 +24,15 @@ export class DhisService {
     return {};
   }
 
+  private _getAuthorizationHeader(): string {
+    const username = this.configService.get<string>('dhis.username');
+    const password = this.configService.get<string>('dhis.password');
+    const apiToken = this.configService.get<string>('dhis.apiToken');
+    return apiToken
+      ? 'ApiToken ' + apiToken
+      : 'Basic ' + btoa(username + ':' + password);
+  }
+
   getOtherParam(param) {
     return (
       (Object.keys(param).filter((p: any) => !isNaN(p)).length > 0 ? '/' : '') +
@@ -51,14 +60,13 @@ export class DhisService {
     }
 
     const apiEndPoint = this.configService.get<string>('dhis.api');
-    const username = this.configService.get<string>('dhis.username');
-    const password = this.configService.get<string>('dhis.password');
 
     const queryKeys = Object.keys(query);
 
     return new Promise(async (resolve: any, reject: any) => {
       let response;
       try {
+        const authorization = this._getAuthorizationHeader();
         const url =
           queryKeys.length > 0
             ? `${apiEndPoint}/api/${param.endPoint}${this.getOtherParam(
@@ -74,11 +82,7 @@ export class DhisService {
         if (['GET', 'get'].indexOf(request.method) > -1) {
           response = await firstValueFrom(
             this.http.get(url, {
-              headers: headers ?? {},
-              auth: {
-                username: username,
-                password: password,
-              },
+              headers: { ...(headers ?? {}), Authorization: authorization },
             }),
           ).catch((error: any) => {
             this.generateErrorException(error);
@@ -89,10 +93,7 @@ export class DhisService {
               headers: {
                 ...(headers ?? {}),
                 ...(file ? fileData.getHeaders() ?? {} : {}),
-              },
-              auth: {
-                username: username,
-                password: password,
+                Authorization: authorization,
               },
             }),
           ).catch((error: any) => {
@@ -107,10 +108,7 @@ export class DhisService {
               headers: {
                 'Content-Type': 'application/json;charset=UTF-8',
                 ...(headers ?? {}),
-              },
-              auth: {
-                username: username,
-                password: password,
+                Authorization: authorization,
               },
             }),
           ).catch((error: any) => {
@@ -122,10 +120,7 @@ export class DhisService {
               headers: {
                 'Content-Type': 'application/json;charset=UTF-8',
                 ...(headers ?? {}),
-              },
-              auth: {
-                username: username,
-                password: password,
+                Authorization: authorization,
               },
             }),
           ).catch((error: any) => {
