@@ -1,19 +1,19 @@
 # getting node 16 omage
-FROM node:16
+FROM node:gallium-bookworm-slim
 
 # Create app directory
-WORKDIR /usr/src/dhis2-mediator-api
+WORKDIR /mediator
 
 
 # Install app dependencies
 COPY package*.json ./
-RUN npm install
-
 # Bundle app source
-COPY . .
+COPY . ./
+
+RUN npm install --omit=dev
 
 
 # exposing port
 EXPOSE 3000
 
-CMD [ "npm", "start" ]
+CMD [ "node", "main" ]
