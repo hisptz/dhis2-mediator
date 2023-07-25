@@ -11,4 +11,3 @@ cp ./build-README.md ./dist/README.md
 cp ./package.json ./dist/
 cp ./package-lock.json ./dist/
 cd ./dist/ || return
-zip -r "$PKG_NAME-$PKG_VERSION".zip .
