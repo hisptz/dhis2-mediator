@@ -4,7 +4,9 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './modules/dhis/utilities/exception.filter';
 
 async function bootstrap() {
-  const globalPrefix = 'api';
+  const contextPath =
+    process.env.MEDIATOR_CONTEXT_PATH ?? process.env.CONTEXT_PATH;
+  const globalPrefix = `${contextPath ?? ''}api`;
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'log', 'warn'],
   });

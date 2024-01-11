@@ -2,7 +2,8 @@
   "name": "dhis2-mediator",
   "version": "1.0.5",
   "description": "",
-  "author": "",
+  "author": "HISP Tanzania<dev@hisptanzania.org>",
+  "bin": "dist/main.js",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -20,6 +21,11 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
+  "files": [
+    "dist/**",
+    "package.json",
+    "package-lock.json"
+  ],
   "dependencies": {
     "@nestjs/axios": "^2.0.0",
     "@nestjs/cache-manager": "^1.0.0",
