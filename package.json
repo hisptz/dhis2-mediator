@@ -1,7 +1,7 @@
 {
   "name": "@hisptz/dhis2-mediator",
   "pkgName": "dhis2-mediator",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "",
   "author": "HISP Tanzania<dev@hisptanzania.org>",
   "bin": {
@@ -35,6 +35,7 @@
     "@nestjs/config": "^2.3.4",
     "@nestjs/core": "^9.4.3",
     "@nestjs/platform-express": "^9.4.3",
+    "axios": "^1.6.7",
     "cache-manager": "^5.2.2",
     "commander": "^12.0.0",
     "express-rate-limit": "^6.7.1",
