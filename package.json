@@ -1,7 +1,7 @@
 {
   "name": "@hisptz/dhis2-mediator",
   "pkgName": "dhis2-mediator",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "",
   "author": "HISP Tanzania<dev@hisptanzania.org>",
   "bin": {
@@ -85,5 +85,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
