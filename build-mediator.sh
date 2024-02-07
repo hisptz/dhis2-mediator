@@ -1,11 +1,11 @@
 #!/bin/bash
 
 PKG_VERSION=$(node -p "require('./package.json').version")
-PKG_NAME=$(node -p "require('./package.json').name")
+PKG_NAME=$(node -p "require('./package.json').pkgName")
 
 BUNDLE_NAME="$PKG_NAME-$PKG_VERSION.zip"
 # build
-nest build --webpack
+nest build --tsc
 # package
 cp ./Dockerfile ./dist/
 cp ./.env.example ./dist/.env.example
@@ -15,5 +15,5 @@ cp ./package-lock.json ./dist/
 cd ./dist/ || return
 
 bestzip "$BUNDLE_NAME" *
-mkdir "build"
-mv $BUNDLE_NAME build
+mkdir "bundle"
+mv $BUNDLE_NAME bundle

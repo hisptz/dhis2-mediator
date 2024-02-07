@@ -1,19 +1,19 @@
 import { Command } from "commander";
-import { configureApp, startApp, validateConfig } from "./start";
+import { configureApp, startApp } from "./start";
 
 const program = new Command();
 
 export interface Config {
-	port: number;
-	username: string;
-	password: string;
-	token: string;
+	port?: string;
+	username?: string;
+	password?: string;
+	token?: string;
 	context?: string;
-	link: string;
-	resources: string;
-	readonlyResources: string;
-	cache: string;
-	requests: string;
+	dhis2BaseURL?: string;
+	resources?: string;
+	readonlyResources?: string;
+	cache?: string;
+	nrpm?: string;
 }
 
 program
@@ -24,30 +24,29 @@ program
 
 program
 	.command("start")
-	.option("-p --port <port>", "Port to run the mediator")
-	.option("-l --link <baseURL>", "DHIS2 URL")
-	.option("-u --username <username>", "DHIS2 Username")
-	.option("-p --password <password>", "DHIS2 Password")
+	.option("--port <number>", "Port to run the mediator")
+	.option("--dhis2BaseURL <string>", "DHIS2 URL")
+	.option("--username <string>", "DHIS2 Username")
+	.option("--password <string>", "DHIS2 Password")
 	.option(
-		"-t --token <token>",
+		"--token <token>",
 		"DHIS2 personal access token (Preferred, used instead of username and password)"
 	)
-	.option("-c --context <context>", "Path where the server will be available")
+	.option("--context <string>", "Path where the server will be available")
 	.option(
-		"-r --resources <resources>",
+		"--resources <string>",
 		"Resources to allow access separated by comma (,)"
 	)
 	.option(
-		" --readonlyResources <readonlyResources>",
+		"--readonlyResources <string>",
 		"Allowed resources that should be read only separated by comma (,). (Will only accept GET requests)"
 	)
 	.option(
-		"--cache <cache>",
+		"--cache <number>",
 		"Number of milliseconds for caching readonly resources"
 	)
-	.option("--nrpm <requests>", "Number of requests per minute")
+	.option("--nrpm <number>", "Number of requests per minute")
 	.action((params: Config) => {
-		validateConfig(params);
 		configureApp(params);
 		startApp();
 	});

@@ -78,7 +78,7 @@ DHIS2_PASSWORD="password"
 DHIS2_API_TOKEN="api_token"
 PORT="3000"
 CACHE_TTL="<number-of-milliseconds-for-caching-readonly-resources>"
-NUMBER_OF_REQUESTS_PER_MINUTE="<number-of-client-requests-per-minute>"
+NUMBER_OF_REQUESTS_PER_MINUTE="<number-of-client-nrpm-per-minute>"
 READONLY_RESOURCES=["resource1"]
 ALLOWED_RESOURCES=["resource2"]
 ```
@@ -98,7 +98,7 @@ ALLOWED_RESOURCES=["resource2"]
   
   This could be specified as CACHE_TTL = 3600</li>
 
-   <li>The <strong>NUMBER_OF_REQUESTS_PER_MINUTE</strong> is the number that specifies the request a client can make to a resource per minute. This is to be used as a strategy against DDOS attacks. If not specified, the mediator considers 100 requests per minute.
+   <li>The <strong>NUMBER_OF_REQUESTS_PER_MINUTE</strong> is the number that specifies the request a client can make to a resource per minute. This is to be used as a strategy against DDOS attacks. If not specified, the mediator considers 100 nrpm per minute.
   
   This could be specified as NUMBER_OF_REQUESTS_PER_MINUTE = 100</li>
 </ul>
@@ -200,7 +200,9 @@ For more configurations of the ports and how docker-compose would be handling th
 
 ## 5. <a name='connect'></a>How to connect with another application
 
-Once the mediator is running either on development or production(recommended) mode, other applications can access the DHIS2 API through this mediator by making HTTP requests to the API resources (allowed and readonly) as specified on the `.env` file through the specified port.
+Once the mediator is running either on development or production(recommended) mode, other applications can access the
+DHIS2 API through this mediator by making HTTP nrpm to the API resources (allowed and readonly) as specified on
+the `.env` file through the specified port.
 
 ```
 # DHIS2
@@ -239,7 +241,7 @@ curl -X DELETE http://localhost:3000/api/cache
 
 ### 5.2 Accessing allowed resources
 
-These API resources can only be accessed by GET, POST and PUT HTTP methods. As per the above example we can access the `dataStore` resource using the following requests. These resources are not cached, hence no clearing of cache required for these resources.
+These API resources can only be accessed by GET, POST and PUT HTTP methods. As per the above example we can access the `dataStore` resource using the following nrpm. These resources are not cached, hence no clearing of cache required for these resources.
 
 ```
 

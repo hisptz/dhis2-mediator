@@ -1,22 +1,62 @@
-import { Config } from "./index";
-import console from "console";
+import { Config } from "./program";
 import { bootstrap } from "../bootstrap";
 
+const configMapping = [
+	{
+		envKey: "DHIS2_BASE_URL",
+		key: "dhis2BaseURL",
+	},
+	{
+		envKey: "DHIS2_USERNAME",
+		key: "username",
+	},
+	{
+		envKey: "DHIS2_PASSWORD",
+		key: "password",
+	},
+	{
+		envKey: "DHIS2_API_TOKEN",
+		key: "token",
+	},
+	{
+		envKey: "CONTEXT_PATH",
+		key: "context",
+	},
+	{
+		envKey: "PORT",
+		key: "port",
+	},
+	{
+		envKey: "CACHE_TTL",
+		key: "cache",
+	},
+	{
+		envKey: "NUMBER_OF_REQUESTS_PER_MINUTE",
+		key: "nrpm",
+	},
+	{
+		envKey: "READONLY_RESOURCES",
+		key: "readonlyResources",
+		get: (resources: string) => resources.split(","),
+	},
+	{
+		envKey: "ALLOWED_RESOURCES",
+		key: "resources",
+		get: (resources: string) => resources.split(","),
+	},
+];
+
 export function configureApp(config: Config) {
-	process.env.DHIS2_BASE_URL = config.link;
-	process.env.DHIS2_USERNAME = config.username;
-	process.env.DHIS2_PASSWORD = config.password;
-	process.env.DHIS2_API_TOKEN = config.token;
-	process.env.CONTEXT_PATH = config.context;
-	process.env.PORT = config.port.toString();
-	process.env.CACHE_TTL = config.cache;
-	process.env.NUMBER_OF_REQUESTS_PER_MINUTE = config.requests;
-	process.env.READONLY_RESOURCES = config.readonlyResources;
-	process.env.ALLOWED_RESOURCES = config.resources;
+	configMapping.forEach(({ envKey, key, get }) => {
+		const value = config[key];
+		if (value) {
+			process.env[envKey] = get ? get(value) : value;
+		}
+	});
 }
 
 export function validateConfig(config: Config) {
-	const { username, password, token, link } = config;
+	const { username, password, token, dhis2BaseURL } = config;
 	if (!token) {
 		if (!username || !password) {
 			console.error(
@@ -29,11 +69,11 @@ export function validateConfig(config: Config) {
 			);
 		}
 	}
-	if (!link) {
+	if (!dhis2BaseURL) {
 		console.error("Please provide a DHIS2 URL");
 		process.exit(1);
 	}
-	if (link.match(/https?/)) {
+	if (dhis2BaseURL.match(/https?/)) {
 		console.error("Invalid DHIS2 URL");
 		process.exit(1);
 	}

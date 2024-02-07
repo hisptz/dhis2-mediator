@@ -21,6 +21,9 @@ export async function bootstrap() {
 	const port = process.env.MEDIATOR_PORT || process.env.PORT || 3000;
 	await app.listen(port, () => {
 		Logger.log(
+			`Connected to DHIS2 instance: ${process.env.DHIS2_BASE_URL}`
+		);
+		Logger.log(
 			`Mediator now available at localhost:${port}/${globalPrefix}`
 		);
 	});
