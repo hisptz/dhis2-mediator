@@ -14,6 +14,6 @@ cp ./package.json ./dist/
 cp ./package-lock.json ./dist/
 cd ./dist/ || return
 
-bestzip "$BUNDLE_NAME" *
-mkdir "bundle"
-mv $BUNDLE_NAME bundle
+#bestzip "$BUNDLE_NAME" *
+#mkdir "bundle"
+#mv $BUNDLE_NAME bundle
